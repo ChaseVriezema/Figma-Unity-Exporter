@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: sans-serif; padding: 16px; margin: 0; }
+    h2 { font-size: 14px; margin: 0 0 12px; }
+    p { font-size: 12px; color: #555; margin: 0 0 12px; }
+    button { width: 100%; padding: 8px; margin-top: 8px; cursor: pointer; border-radius: 4px; border: 1px solid #ccc; }
+    #export-btn { background: #18a0fb; color: white; border: none; }
+    #export-btn:disabled { background: #aaa; cursor: not-allowed; }
+    #status { margin-top: 12px; font-size: 12px; color: #333; }
+    #error { margin-top: 8px; font-size: 12px; color: #f24822; }
+  </style>
+</head>
+<body>
+  <h2>Unity Exporter</h2>
+  <p>Select frames on the canvas then export. A JSON file will download — import it in Unity via Tools → Figma Importer.</p>
+
+  <button id="export-btn">Export Selection</button>
+  <button id="cancel-btn">Cancel</button>
+
+  <div id="status"></div>
+  <div id="error"></div>
+
+  <script>
+    const exportBtn = document.getElementById('export-btn');
+    const status = document.getElementById('status');
+    const error = document.getElementById('error');
+
+    exportBtn.onclick = () => {
+      exportBtn.disabled = true;
+      status.textContent = 'Serializing nodes...';
+      error.textContent = '';
+      parent.postMessage({ pluginMessage: { type: 'export' } }, '*');
+    };
+
+    document.getElementById('cancel-btn').onclick = () => {
+      parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
+    };
+
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      if (!msg) return;
+
+      if (msg.type === 'export-ready') {
+        status.textContent = 'Preparing download...';
+        try {
+          const json = JSON.stringify(msg.data, null, 2);
+          const blob = new Blob([json], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `figma-export-${Date.now()}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+          status.textContent = '✓ Downloaded. Import in Unity via Tools → Figma Importer.';
+        } catch (e) {
+          error.textContent = `Download failed: ${e}`;
+        }
+        exportBtn.disabled = false;
+      }
+
+      if (msg.type === 'error') {
+        error.textContent = msg.message;
+        status.textContent = '';
+        exportBtn.disabled = false;
+      }
+    };
+  </script>
+</body>
+</html>

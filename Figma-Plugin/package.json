@@ -1,0 +1,12 @@
+{
+  "name": "figma-unity-exporter-plugin",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -p tsconfig.json --watch"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "*",
+    "typescript": "^5.0.0"
+  }
+}
