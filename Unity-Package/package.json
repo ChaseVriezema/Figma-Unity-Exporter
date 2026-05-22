@@ -1,0 +1,8 @@
+{
+  "name": "com.manabound.figma-unity-exporter",
+  "version": "0.0.8",
+  "displayName": "Figma Unity Exporter",
+  "description": "Imports Figma layouts, hierarchy, text, and images into Unity UI.",
+  "unity": "2021.3",
+  "dependencies": {}
+}

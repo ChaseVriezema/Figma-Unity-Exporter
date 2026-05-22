@@ -1,0 +1,5 @@
+{
+  "name": "FigmaImporter",
+  "includePlatforms": ["Editor"],
+  "references": ["Unity.TextMeshPro"]
+}
